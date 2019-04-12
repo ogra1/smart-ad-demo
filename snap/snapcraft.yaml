@@ -13,15 +13,13 @@ grade: stable
 confinement: strict
 
 apps:
-  daemon:
-    command: desktop-launch xwayland-kiosk-launch eyedetect.py
+  player:
+    command: desktop-launch xwayland-kiosk-launch player.sh
     daemon: simple
     environment:
-      LD_LIBRARY_PATH: $SNAP/usr/lib/atlas-base/atlas:$LD_LIBRARY_PATH
       XWAYLAND_FULLSCREEN_WINDOW_HINT: title="smart-ad-demo"
     slots: [ x11 ]
     plugs:
-      - camera
       - home
       - mir
       - network
@@ -29,6 +27,17 @@ apps:
       - opengl
       - wayland
       - x11-plug
+  daemon:
+    command: eyedetect.py
+    daemon: simple
+    environment:
+      LD_LIBRARY_PATH: $SNAP/usr/lib/atlas-base/atlas:$LD_LIBRARY_PATH
+    plugs:
+      - camera
+      - home
+      - network
+      - network-bind
+      - opengl
 
 plugs:
   x11-plug:
@@ -72,7 +81,6 @@ parts:
       - libatlas3-base
       - libatspi2.0-0
       - libavcodec-ffmpeg-extra56
-      - libavformat-ffmpeg56
       - libavutil-ffmpeg54
       - libbluray1
       - libboost-filesystem1.58.0
@@ -169,63 +177,13 @@ parts:
       - libxrender1
       - libxvidcore4
       - libzvbi0
+      - mplayer
       - python-numpy
       - to amd64: [ "libcrystalhd3:amd64", "libnuma1:amd64" ]
       - to i386: [ "libcrystalhd3:i386", "libnuma1:i386" ]
-  imv:
-    source: https://github.com/eXeC64/imv.git
-    source-depth: 1
-    source-tag: v3.0.0
-    plugin: make
-    build-packages:
-      - asciidoc
-      - libsdl2-dev
-      - libcmocka-dev
-      - libfontconfig1-dev
-      - libfreeimage-dev
-      - libsdl2-ttf-dev
-      - xsltproc
-    stage-packages:
-      - libasound2
-      - libasyncns0
-      - libflac8
-      - libfontconfig1
-      - libfreeimage3
-      - libgomp1
-      - libilmbase12
-      - libjasper1
-      - libjbig0
-      - libjpeg-turbo8
-      - libjxr0
-      - liblcms2-2
-      - libogg0
-      - libopenexr22
-      - libopenjp2-7
-      - libpulse0
-      - libraw15
-      - libsdl2-2.0-0
-      - libsdl2-ttf-2.0-0
-      - libsndfile1
-      - libsndio6.1
-      - libtiff5
-      - libvorbis0a
-      - libvorbisenc2
-      - libwayland-client0
-      - libwayland-cursor0
-      - libwayland-egl1-mesa
-      - libwebp5
-      - libwebpmux1
-      - libx11-6
-      - libxau6
-      - libxcb1
-      - libxcursor1
-      - libxdmcp6
-      - libxext6
-      - libxfixes3
-      - libxi6
-      - libxinerama1
-      - libxkbcommon0
-      - libxrandr2
-      - libxrender1
-      - libxss1
-      - libxxf86vm1
+  player:
+    source: .
+    plugin: nil
+    override-build: |
+      mkdir -p $SNAPCRAFT_PART_INSTALL/bin
+      cp player.sh $SNAPCRAFT_PART_INSTALL/bin
